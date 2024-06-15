@@ -8,7 +8,7 @@
 #include <lifecycle_msgs/msg/transition.hpp>
 
 #include <genicam/srv/trigger_camera.hpp>
-#include <genicam/srv/create_camera.hpp>
+#include <genicam/srv/ask_camera.hpp>
 #include <genicam/msg/camera_device.hpp>
 #include <genicam/msg/camera_device_array.hpp>
 
@@ -26,7 +26,7 @@ class CameraManager : public rclcpp::Node {
         
         rclcpp::Subscription<genicam::msg::CameraDeviceArray>::SharedPtr camera_info_sub;
         rclcpp::TimerBase::SharedPtr camera_check_timer;
-        rclcpp::Client<genicam::srv::CreateCamera>::SharedPtr camera_get;
+        rclcpp::Client<genicam::srv::AskCamera>::SharedPtr camera_get;
 
         genicam::msg::CameraDeviceArray::SharedPtr cam_discovered;
         std::vector<genicam::msg::CameraDevice> camera_devices;

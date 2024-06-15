@@ -1,5 +1,3 @@
-string id
-
 string model
 string vendor
 string serial

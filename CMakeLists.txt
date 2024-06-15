@@ -61,13 +61,15 @@ set(ros_dependencies
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CameraDevice.msg"
   "msg/CameraDeviceArray.msg"
-  "srv/CreateCamera.srv"
+  "srv/AskCamera.srv"
   "srv/TriggerCamera.srv"
-  "msg/TriggerCapture.msg"
   "srv/TriggerCapture.srv"
 )
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
+# add_executable(camera_discover src/CameraIn.cpp)
+# ament_target_dependencies(camera_discover ${ros_dependencies})
+# target_link_libraries(camera_discover "${cpp_typesupport_target}")
 
 add_executable(camera_discover src/CameraDiscover.cpp)
 ament_target_dependencies(camera_discover ${ros_dependencies})

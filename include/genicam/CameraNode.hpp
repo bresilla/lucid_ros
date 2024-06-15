@@ -5,7 +5,6 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <genicam/srv/trigger_camera.hpp>
 #include <genicam/srv/trigger_capture.hpp>
-#include <genicam/srv/create_camera.hpp>
 #include <genicam/msg/camera_device.hpp>
 #include <genicam/msg/camera_device_array.hpp>
 #include <std_msgs/msg/int16.hpp>

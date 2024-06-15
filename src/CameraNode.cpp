@@ -8,7 +8,7 @@
 #include <std_msgs/msg/int16.hpp>
 
 #include <genicam/CameraNode.hpp>
-#include <genicam/CameraSets.hpp>
+#include <genicam/CameraInitialize.hpp>
 #include <genicam/srv/trigger_camera.hpp>
 #include <genicam/srv/trigger_capture.hpp>
 

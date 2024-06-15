@@ -3,7 +3,7 @@
 #include <genicam/msg/camera_device_array.hpp>
 
 #include <ArenaApi.h>
-#include <genicam/CameraSets.hpp>
+#include <genicam/CameraInitialize.hpp>
 #include <genicam/CameraDiscover.hpp>
 
 
@@ -14,13 +14,13 @@ inline uint64_t convert_mac(std::string mac) {
 
 CameraArray::CameraArray(genicam::msg::CameraDeviceArray::SharedPtr camera_discovered) : Node("camera_array"), camera_discovered (camera_discovered) {
     publish_camera_discovered_timer = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&CameraArray::publish_camera_discovered, this));
-    array_pub_ = this->create_publisher<genicam::msg::CameraDeviceArray>("/cam_discovered", 10);
-    service = this->create_service<genicam::srv::CreateCamera>("cam_discovered", std::bind(&CameraArray::service_trigger, this, std::placeholders::_1, std::placeholders::_2));
+    array_pub_ = this->create_publisher<genicam::msg::CameraDeviceArray>("cam_discovered", 10);
+    service = this->create_service<genicam::srv::AskCamera>("cam_discovered", std::bind(&CameraArray::service_trigger, this, std::placeholders::_1, std::placeholders::_2));
     
     RCLCPP_INFO(this->get_logger(), "Camer info service started and publishing camera info");
 }
 
-void CameraArray::service_trigger(const std::shared_ptr<genicam::srv::CreateCamera::Request> request, std::shared_ptr<genicam::srv::CreateCamera::Response> response) {
+void CameraArray::service_trigger(const std::shared_ptr<genicam::srv::AskCamera::Request> request, std::shared_ptr<genicam::srv::AskCamera::Response> response) {
     if (camera_discovered->cameras.empty()) {
         response->success = false;
         response->message = "No cameras found";
@@ -41,7 +41,7 @@ void CameraArray::service_trigger(const std::shared_ptr<genicam::srv::CreateCame
         }
     } else if (!camera_name.empty()) {
         for (const auto &camera : camera_discovered->cameras) {
-            if (camera.id == camera_name) {
+            if (camera.name == camera_name) {
                 response->camera_device = camera;
                 response->success = true;
                 break;
@@ -60,7 +60,7 @@ void CameraArray::publish_camera_discovered() {
     array_pub_->publish(*camera_discovered);
     std::vector<std::string> ids;
     for (const auto &camera : camera_discovered->cameras) {
-        ids.push_back(camera.id);
+        ids.push_back(camera.name);
     }
 }
 
@@ -95,10 +95,9 @@ void CameraInfo::update_camera_discovered() {
             camera_device.lla = deviceInfo.IsLLAConfigurationEnabled();
             uint64_t hex_mac = convert_mac(deviceInfo.MacAddressStr().c_str());
             if (camset::by_mac.find(hex_mac) != camset::by_mac.end()) {
-                camera_device.id = camset::by_mac.at(hex_mac).name;
                 camera_device.name = camset::by_mac.at(hex_mac).name;
             }
-            camera_array.cameras.push_back(camera_device);   
+            camera_array.cameras.push_back(camera_device);
         }
         Arena::CloseSystem(pSystem);
         *camera_discovered = camera_array;
